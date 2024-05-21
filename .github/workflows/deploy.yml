@@ -1,0 +1,37 @@
+name: Deploy React App
+
+on:
+  push:
+      branches:
+        -main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code # vérifie le code du dépôt
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js # configure la version de Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      
+
+      - name: Build project # construit l'application avec les variables d'environnement
+        run: npm run build
+        env:
+          REACT_APP_GENIUS_API_DESCRIPTION_URL: ${{ secrets.REACT_APP_GENIUS_API_DESCRIPTION_URL }}
+          REACT_APP_GENIUS_API_DETAILS_URL: ${{ secrets.REACT_APP_GENIUS_API_DETAILS_URL }}
+          REACT_APP_GENIUS_API_HOST: ${{ secrets.REACT_APP_GENIUS_API_HOST }}
+          REACT_APP_GENIUS_API_KEY: ${{ secrets.REACT_APP_GENIUS_API_KEY }}
+          REACT_APP_LYRICS_OVH_API_URL: ${{ secrets.REACT_APP_LYRICS_OVH_API_URL }}
+
+      - name: Deploy to GitHub Pages # déploie le contenu du répertoire ./build vers GitHub Pages
+        if: github.ref == 'refs/heads/main'
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build

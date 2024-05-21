@@ -3,6 +3,12 @@ import Axios from 'axios';
 import { useState } from 'react';
 
 function App() {
+  const geniusApiKey = process.env.REACT_APP_GENIUS_API_KEY
+  const geniusApiHost = process.env.REACT_APP_GENIUS_API_HOST
+  const geniusApiDescriptionUrl = process.env.REACT_APP_GENIUS_API_DESCRIPTION_URL
+  const geniusApiDetailsUrl = process.env.REACT_APP_GENIUS_API_DETAILS_URL
+  const lyricsOvhApiUrl = process.env.REACT_APP_LYRICS_OVH_API_URL
+
   // États pour stocker les résultats, l'artiste, le titre et les paroles
   const [results, setResults] = useState([]);
   const [artist, setArtist] = useState('');
@@ -10,21 +16,19 @@ function App() {
   const [lyrics, setLyrics] = useState('');
   const [description, setDescription] = useState('');
 
-
-
-const optionsDetails = {
-  method: 'GET',
-  url: 'https://genius-song-lyrics1.p.rapidapi.com/search/',
-  params: {
-    q: artist,
-    per_page: '10',
-    page: '1'
-  },
-  headers: {
-    'X-RapidAPI-Key': 'e3afcba8d6msha838af3aed0bec3p1fdf8djsnc09bd9425cd3',
-    'X-RapidAPI-Host': 'genius-song-lyrics1.p.rapidapi.com'
-  }
-};
+  const optionsDetails = {
+    method: 'GET',
+    url: geniusApiDetailsUrl,
+    params: {
+      q: artist,
+      per_page: '10',
+      page: '1'
+    },
+    headers: {
+      'X-RapidAPI-Key': geniusApiKey,
+      'X-RapidAPI-Host': geniusApiHost
+    }
+  };
 
   const searchArtistDetails = () => {
     Axios.request(optionsDetails).then(res => {
@@ -40,7 +44,7 @@ const optionsDetails = {
       return;
     }
     Axios.get(
-      `https://private-anon-6aaab12ad2-lyricsovh.apiary-proxy.com/v1/${artist}/${title}`).then(res => {
+      `${lyricsOvhApiUrl}${artist}/${title}`).then(res => {
         console.log(res.data.lyrics);
         setLyrics(res.data.lyrics);
       })
@@ -51,11 +55,11 @@ const optionsDetails = {
   
   const optionsDescription = {
     method: 'GET',
-    url: 'https://genius-song-lyrics1.p.rapidapi.com/artist/details/',
+    url: geniusApiDescriptionUrl,
     params: {id: artistId},
     headers: {
-      'X-RapidAPI-Key': 'e3afcba8d6msha838af3aed0bec3p1fdf8djsnc09bd9425cd3',
-      'X-RapidAPI-Host': 'genius-song-lyrics1.p.rapidapi.com'
+      'X-RapidAPI-Key': geniusApiKey,
+      'X-RapidAPI-Host': geniusApiHost
     }
   };
 
@@ -113,6 +117,6 @@ const optionsDetails = {
       </ul>
     </div>
   );
-};
+}
 
 export default App;
